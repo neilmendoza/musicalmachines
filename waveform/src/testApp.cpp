@@ -18,36 +18,50 @@ void testApp::setup()
     // Here's the actual noise-making object
     Generator tone = SquareWave().freq( noteFreqControl );
     
-    // Let's put a filter on the tone
-    
     // It's just a steady tone until we modulate the amplitude with an envelope
     ControlGenerator envelopeTrigger = synth.addParameter("trigger");
     Generator toneWithEnvelope = tone * ADSR().attack(0.01).decay(1.5).sustain(0).release(0).trigger(envelopeTrigger).legato(true);
     
-    // let's send the tone through some delay
-    //Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.1).feedback(0.2);
-    
     synth.setOutputGen( toneWithEnvelope );
     
     doge.loadImage("doge.png");
+    
+    lastTriggerSecs = -100000.f;
 }
 
 //--------------------------------------------------------------
 void testApp::update()
 {
+    vol = ofMap((ofGetElapsedTimef() - lastTriggerSecs) / 1.5f, 0.f, 1.f, 1.f, 0.f, true);
 }
 
 //--------------------------------------------------------------
 void testApp::draw()
 {
-    float keyWidth = ofGetWindowWidth() / NUMBER_OF_KEYS;
+    ofEnableAlphaBlending();
+    
+    float keyWidth = ofGetWidth() / NUMBER_OF_KEYS;
+    float w = keyWidth;
+    float h = keyWidth * doge.getHeight() / doge.getWidth();
+    
     for(int i = 0; i < NUMBER_OF_KEYS; i++)
     {
+        ofPushMatrix();
         float hue = i / (float)NUMBER_OF_KEYS;
-        float saturation = 0.8f;
-        if ((i == scaleDegree) && ofGetMousePressed() ) saturation = 0.f;
-        ofSetColor(ofFloatColor::fromHsb(hue, saturation, 1.f));
-        doge.draw(i * keyWidth, 0.75 * ofGetHeight(), keyWidth, keyWidth * doge.getHeight() / doge.getWidth());
+        ofSetColor(ofFloatColor::fromHsb(hue, 0.8f, 1.f));
+        ofTranslate((i + .5f) * keyWidth, 0.75f * ofGetHeight());
+        if (vol == 0.f || i != scaleDegree) doge.draw(-.5f * w, -.5f * h, w, h);
+        ofPopMatrix();
+    }
+    
+    if (vol > 0.f)
+    {
+        ofPushMatrix();
+        ofSetColor(255);
+        ofTranslate((scaleDegree + .5f) * keyWidth, 0.75f * ofGetHeight());
+        float dogeScale = ofMap(vol, 0.f, 1.f, 1.f, 3.f);
+        doge.draw(-.5f * w * dogeScale, -.5f * h * dogeScale, w * dogeScale, h * dogeScale);
+        ofPopMatrix();
     }
     
     if (noteFreq != 0.f)
@@ -55,23 +69,23 @@ void testApp::draw()
         ofSetColor(0);
         unsigned x = 0;
         // decay is 1.5 secs
-        float vol = ofMap((ofGetElapsedTimef() - lastTriggerSecs) / 1.5f, 0.f, 1.f, 0.25f * ofGetHeight(), 0.f, true);
         ofPushMatrix();
         ofSetLineWidth(2.f);
         ofTranslate(0, 0.25f * ofGetHeight());
         
         // step is half a period
         // show 0.1 secs of a waveform in total
+        float waveHeight = 0.25 * ofGetHeight() * vol;
         float step = 0.5f * ofGetWidth() / (0.1f * noteFreq);
         while (x < ofGetWidth())
         {
-            ofLine(x, 0, x, vol);
-            ofLine(x, vol, x + step, vol);
+            ofLine(x, 0, x, waveHeight);
+            ofLine(x, waveHeight, x + step, waveHeight);
             x += step;
-            ofLine(x, vol, x, -vol);
-            ofLine(x, -vol, x + step, -vol);
+            ofLine(x, waveHeight, x, -waveHeight);
+            ofLine(x, -waveHeight, x + step, -waveHeight);
             x += step;
-            ofLine(x, -vol, x, 0);
+            ofLine(x, -waveHeight, x, 0);
         }
         ofPopMatrix();
     }
@@ -93,6 +107,7 @@ void testApp::setScaleDegreeBasedOnMouseX()
 
 void testApp::trigger()
 {
+    scaleDegree = ofGetMouseX() * NUMBER_OF_KEYS / ofGetWindowWidth();
     int degreeToTrigger = floor(ofClamp(scaleDegree, 0, 9));
     
     noteFreq = PENTATONIC_FREQS[degreeToTrigger];
@@ -112,19 +127,17 @@ void testApp::audioRequested(float* output, int bufferSize, int nChannels)
     synth.fillBufferOfFloats(output, bufferSize, nChannels);
 }
 
+void testApp::mousePressed(int x, int y, int button)
+{
+    trigger();
+}
+
 void testApp::mouseMoved(int x, int y )
 {
-    setScaleDegreeBasedOnMouseX();
 }
 
 void testApp::mouseDragged(int x, int y, int button)
 {
-    setScaleDegreeBasedOnMouseX();
-}
-
-void testApp::mousePressed(int x, int y, int button)
-{
-    trigger();
 }
 
 //--------------------------------------------------------------
