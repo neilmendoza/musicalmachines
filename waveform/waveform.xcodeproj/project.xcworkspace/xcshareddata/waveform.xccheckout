@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>BB9A77CB-CF9A-47C3-9882-496172D9E429</string>
+	<key>IDESourceControlProjectName</key>
+	<string>waveform</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>12E642EF-8E1F-403E-A529-D4668013477F</key>
+		<string>ssh://bitbucket.org/neilmendoza/mmandff.git</string>
+		<key>7BCF213A-055B-4EC7-BBE6-6CE53590ED7D</key>
+		<string>https://github.com/TonicAudio/ofxTonic.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>waveform/waveform.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>12E642EF-8E1F-403E-A529-D4668013477F</key>
+		<string>../../..</string>
+		<key>7BCF213A-055B-4EC7-BBE6-6CE53590ED7D</key>
+		<string>../../../../../addons/ofxTonic</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://bitbucket.org/neilmendoza/mmandff.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>12E642EF-8E1F-403E-A529-D4668013477F</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>12E642EF-8E1F-403E-A529-D4668013477F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>mmandff</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7BCF213A-055B-4EC7-BBE6-6CE53590ED7D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxTonic</string>
+		</dict>
+	</array>
+</dict>
+</plist>

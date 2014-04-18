@@ -5,6 +5,8 @@ const float testApp::PENTATONIC_FREQS[NUMBER_OF_KEYS] = { 103.8261743950, 116.54
 //--------------------------------------------------------------
 void testApp::setup()
 {
+    ofSetFrameRate(60);
+    
     ofBackground(255);
     
     ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
@@ -26,6 +28,8 @@ void testApp::setup()
     //Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.1).feedback(0.2);
     
     synth.setOutputGen( toneWithEnvelope );
+    
+    doge.loadImage("doge.png");
 }
 
 //--------------------------------------------------------------
@@ -40,11 +44,12 @@ void testApp::draw()
     for(int i = 0; i < NUMBER_OF_KEYS; i++)
     {
         float hue = i / (float)NUMBER_OF_KEYS;
-        float saturation = 0.2f;
-        if ((i == scaleDegree) && ofGetMousePressed() ) saturation = 1.f;
+        float saturation = 0.8f;
+        if ((i == scaleDegree) && ofGetMousePressed() ) saturation = 0.f;
         ofSetColor(ofFloatColor::fromHsb(hue, saturation, 1.f));
-        ofRect(keyWidth * i, 0.5f * ofGetHeight(), keyWidth, ofGetWindowHeight());
+        doge.draw(i * keyWidth, 0.75 * ofGetHeight(), keyWidth, keyWidth * doge.getHeight() / doge.getWidth());
     }
+    
     if (noteFreq != 0.f)
     {
         ofSetColor(0);

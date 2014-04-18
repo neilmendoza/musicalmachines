@@ -33,6 +33,7 @@ private:
     void trigger();
     void setScaleDegreeBasedOnMouseX();
     
+    ofImage doge;
     float lastTriggerSecs;
     ofxTonicSynth synth;
     unsigned scaleDegree;
