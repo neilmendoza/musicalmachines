@@ -75,10 +75,18 @@ unsigned long Oscillator::elapsedMicros;
 class StepperOscillator : public Oscillator
 {
 public:
-  StepperOscillator(unsigned stepPin, unsigned dirPin) : stepPin(stepPin), dirPin(dirPin)
+  StepperOscillator(unsigned stepPin, unsigned dirPin) : stepPin(stepPin), dirPin(dirPin), dir(LOW)
   {
-    pinMode(dirPin, OUTPUT);
     pinMode(stepPin, OUTPUT);
+    pinMode(dirPin, OUTPUT);
+    digitalWrite(dirPin, dir);
+  }
+  
+  void noteOff(int midiNote)
+  {
+    Oscillator::noteOff(midiNote);
+    dir = !dir;
+    digitalWrite(dirPin, dir);
   }
   
   void risingEdge()
@@ -92,20 +100,54 @@ public:
   }
   
 private:
+  bool dir;
   unsigned stepPin, dirPin;
 };
 
+class OneShotOscillator : public Oscillator
+{
+public:
+  OneShotOscillator(unsigned pin, float holdSecs = 0.1f) : 
+    pin(pin), holdMicros(1e6 * holdSecs), startTimeMicros(0), Oscillator()
+  {
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+  }
+
+  void noteOn(int midiNote)
+  {
+    startTimeMicros = elapsedMicros;
+    digitalWrite(pin, HIGH);
+  }
+  
+  void update()
+  {
+    if (startTimeMicros)
+    {
+      if (elapsedMicros - startTimeMicros > holdMicros)
+      {
+        digitalWrite(pin, LOW);
+        startTimeMicros = 0;
+      }
+    }
+  }
+  
+private:
+  unsigned long startTimeMicros;
+  unsigned holdMicros;
+  unsigned pin;
+};
+
 StepperOscillator stepper(3, 2);
+OneShotOscillator arm1(ARM1);
+OneShotOscillator arm2(ARM2);
 
 SoftwareSerial midiIn(MIDI_IN, 9); // RX, TX
+
 
 void setup()
 {                
   pinMode(LED, OUTPUT);     
-  pinMode(ARM1, OUTPUT);     
-  pinMode(ARM2, OUTPUT);     
-  digitalWrite(ARM1, LOW);
-  digitalWrite(ARM2, LOW);
   midiIn.begin(MIDI_BAUD_RATE);
 }
 
@@ -113,20 +155,22 @@ void loop()
 {
   Oscillator::elapsedMicros = micros();
   stepper.update();
+  arm1.update();
+  arm2.update();
   updateMidi();
 }
 
 void noteOn(int channel, int note, int vel)
 {
   stepper.noteOn(note);
-  digitalWrite(ARM2, HIGH);
+  //arm1.noteOn(note);
+  //arm2.noteOn(note);
   digitalWrite(LED, HIGH);
 }
 
 void noteOff(int channel, int note)
 {
   stepper.noteOff(note);
-  digitalWrite(ARM2, LOW);
   digitalWrite(LED, LOW);
 }
 
