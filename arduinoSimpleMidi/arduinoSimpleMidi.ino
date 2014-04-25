@@ -44,7 +44,7 @@ void noteOff(int channel, int note)
 void updateMidi()
 {
   int b = midiIn.read();
-  if(b!=-1)
+  if(b!= -1)
   { 
     midiByte2 = midiByte1;
     midiByte1 = midiByte0;
@@ -56,8 +56,6 @@ void updateMidi()
     
     int st = HI_NIBBLE(midiByte2);
     int channel = LO_NIBBLE(midiByte2);
-   
-    // channel += 1; // we're doing this with defines
    
     // now check to see if we have a midi
     if(st == NOTE_ON_STATUS)
