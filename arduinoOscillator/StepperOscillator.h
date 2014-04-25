@@ -29,27 +29,18 @@
  */
 #pragma once
 
-#include <Arduino.h>
+#include "Oscillator.h"
 
-class Oscillator
+class StepperOscillator : public Oscillator
 {
 public:
-  static unsigned long elapsedMicros;
+  StepperOscillator(unsigned stepPin, unsigned dirPin);
   
-  Oscillator();
-  virtual ~Oscillator() {}
+  void noteOff(int midiNote);
+  void risingEdge();
+  void fallingEdge();
   
-  virtual void risingEdge() {}
-  virtual void fallingEdge() {}
-  
-  virtual void noteOn(int midiNote);
-  virtual void noteOff(int midiNote);
-  virtual void update();
-
 private:
-  double midiToFrequency(int midiNote);
-
-  unsigned int periodMicros;
-  unsigned int halfPeriodMicros;
-  bool wave;
+  bool dir;
+  unsigned stepPin, dirPin;
 };

@@ -29,27 +29,18 @@
  */
 #pragma once
 
-#include <Arduino.h>
+#include "Oscillator.h"
 
-class Oscillator
+class OneShotOscillator : public Oscillator
 {
 public:
-  static unsigned long elapsedMicros;
-  
-  Oscillator();
-  virtual ~Oscillator() {}
-  
-  virtual void risingEdge() {}
-  virtual void fallingEdge() {}
-  
-  virtual void noteOn(int midiNote);
-  virtual void noteOff(int midiNote);
-  virtual void update();
+  OneShotOscillator(unsigned pin, float holdSecs = 0.1f);
 
+  void noteOn(int midiNote);
+  void update();
+  
 private:
-  double midiToFrequency(int midiNote);
-
-  unsigned int periodMicros;
-  unsigned int halfPeriodMicros;
-  bool wave;
+  unsigned long startTimeMicros;
+  unsigned holdMicros;
+  unsigned pin;
 };

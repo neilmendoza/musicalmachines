@@ -27,29 +27,29 @@
  *  POSSIBILITY OF SUCH DAMAGE. 
  *
  */
-#pragma once
+#include "OneShotOscillator.h"
 
-#include <Arduino.h>
-
-class Oscillator
+OneShotOscillator::OneShotOscillator(unsigned pin, float holdSecs) : 
+	pin(pin), holdMicros(1e6 * holdSecs), startTimeMicros(0), Oscillator()
 {
-public:
-  static unsigned long elapsedMicros;
-  
-  Oscillator();
-  virtual ~Oscillator() {}
-  
-  virtual void risingEdge() {}
-  virtual void fallingEdge() {}
-  
-  virtual void noteOn(int midiNote);
-  virtual void noteOff(int midiNote);
-  virtual void update();
+	pinMode(pin, OUTPUT);
+	digitalWrite(pin, LOW);
+}
 
-private:
-  double midiToFrequency(int midiNote);
+void OneShotOscillator::noteOn(int midiNote)
+{
+	startTimeMicros = elapsedMicros;
+	digitalWrite(pin, HIGH);
+}
 
-  unsigned int periodMicros;
-  unsigned int halfPeriodMicros;
-  bool wave;
-};
+void OneShotOscillator::update()
+{
+	if (startTimeMicros)
+	{
+		if (elapsedMicros - startTimeMicros > holdMicros)
+		{
+			digitalWrite(pin, LOW);
+			startTimeMicros = 0;
+		}
+	}
+}

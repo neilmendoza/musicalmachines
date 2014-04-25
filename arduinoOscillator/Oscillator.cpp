@@ -27,29 +27,41 @@
  *  POSSIBILITY OF SUCH DAMAGE. 
  *
  */
-#pragma once
+#include "Oscillator.h"
+  
+unsigned long Oscillator::elapsedMicros = 0;
 
-#include <Arduino.h>
-
-class Oscillator
+Oscillator::Oscillator() : periodMicros(0), halfPeriodMicros(0) {}
+  
+void Oscillator::noteOn(int midiNote)
 {
-public:
-  static unsigned long elapsedMicros;
-  
-  Oscillator();
-  virtual ~Oscillator() {}
-  
-  virtual void risingEdge() {}
-  virtual void fallingEdge() {}
-  
-  virtual void noteOn(int midiNote);
-  virtual void noteOff(int midiNote);
-  virtual void update();
-
-private:
-  double midiToFrequency(int midiNote);
-
-  unsigned int periodMicros;
-  unsigned int halfPeriodMicros;
-  bool wave;
+	periodMicros = 1000000.0 / midiToFrequency(midiNote);
+	halfPeriodMicros = 0.5 * periodMicros;
 };
+
+void Oscillator::noteOff(int midiNote)
+{
+	periodMicros = 0;
+	halfPeriodMicros = 0;
+};
+
+void Oscillator::update()
+{
+	if(periodMicros > 0)
+	{
+			unsigned long elapsedPeriodMicros = elapsedMicros % periodMicros;
+			
+			if(elapsedPeriodMicros > halfPeriodMicros != !wave)
+			{
+				// wave form has flipped
+				wave = !wave;
+				if (wave) risingEdge();
+				else fallingEdge();
+			}
+	}
+};
+
+double Oscillator::midiToFrequency(int midiNote)
+{
+	return 440.0 * exp(0.057762265 * (midiNote - 69.0));
+}

@@ -27,29 +27,29 @@
  *  POSSIBILITY OF SUCH DAMAGE. 
  *
  */
-#pragma once
 
-#include <Arduino.h>
+#include "StepperOscillator.h"
 
-class Oscillator
+StepperOscillator::StepperOscillator(unsigned stepPin, unsigned dirPin) : stepPin(stepPin), dirPin(dirPin), dir(LOW)
 {
-public:
-  static unsigned long elapsedMicros;
-  
-  Oscillator();
-  virtual ~Oscillator() {}
-  
-  virtual void risingEdge() {}
-  virtual void fallingEdge() {}
-  
-  virtual void noteOn(int midiNote);
-  virtual void noteOff(int midiNote);
-  virtual void update();
+	pinMode(stepPin, OUTPUT);
+	pinMode(dirPin, OUTPUT);
+	digitalWrite(dirPin, dir);
+}
 
-private:
-  double midiToFrequency(int midiNote);
+void StepperOscillator::noteOff(int midiNote)
+{
+	Oscillator::noteOff(midiNote);
+	dir = !dir;
+	digitalWrite(dirPin, dir);
+}
 
-  unsigned int periodMicros;
-  unsigned int halfPeriodMicros;
-  bool wave;
-};
+void StepperOscillator::risingEdge()
+{
+	digitalWrite(stepPin, HIGH);
+}
+
+void StepperOscillator::fallingEdge()
+{
+	digitalWrite(stepPin, LOW);
+}

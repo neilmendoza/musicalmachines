@@ -1,5 +1,8 @@
 #include <SoftwareSerial.h>
 
+#include "StepperOscillator.h"
+#include "OneShotOscillator.h"
+
 int midiByte0 = -1;
 int midiByte1  = -1;
 int midiByte2  = -1;
@@ -19,131 +22,12 @@ const int MIDI_IN = 10;
 const int ARM1 = 11;
 const int ARM2 = 12;
 
-class Oscillator
-{
-public:
-  static unsigned long elapsedMicros;
-  
-  Oscillator() : periodMicros(0), halfPeriodMicros(0) {}
-  virtual ~Oscillator() {}
-  
-  virtual void risingEdge() {}
-  virtual void fallingEdge() {}
-  
-  virtual void noteOn(int midiNote)
-  {
-    periodMicros = 1000000.0 / midiToFrequency(midiNote);
-    halfPeriodMicros = 0.5 * periodMicros;
-  };
-  
-  virtual void noteOff(int midiNote)
-  {
-    periodMicros = 0;
-    halfPeriodMicros = 0;
-  };
-  
-  virtual void update()
-  {
-    if(periodMicros > 0)
-    {
-        unsigned long elapsedPeriodMicros = elapsedMicros % periodMicros;
-        
-        if(elapsedPeriodMicros > halfPeriodMicros != !wave)
-        {
-          // wave form has flipped
-          wave = !wave;
-          if (wave) risingEdge();
-          else fallingEdge();
-        }
-    }
-  };
-
-private:
-  
-  double midiToFrequency(int midiNote)
-  {
-    return 440.0 * exp(0.057762265 * (midiNote - 69.0));
-  }
-  
-  unsigned int periodMicros;
-  unsigned int halfPeriodMicros;
-  bool wave;
-};
-
-unsigned long Oscillator::elapsedMicros;
-  
-class StepperOscillator : public Oscillator
-{
-public:
-  StepperOscillator(unsigned stepPin, unsigned dirPin) : stepPin(stepPin), dirPin(dirPin), dir(LOW)
-  {
-    pinMode(stepPin, OUTPUT);
-    pinMode(dirPin, OUTPUT);
-    digitalWrite(dirPin, dir);
-  }
-  
-  void noteOff(int midiNote)
-  {
-    Oscillator::noteOff(midiNote);
-    dir = !dir;
-    digitalWrite(dirPin, dir);
-  }
-  
-  void risingEdge()
-  {
-    digitalWrite(stepPin, HIGH);
-  }
-  
-  void fallingEdge()
-  {
-    digitalWrite(stepPin, LOW);
-  }
-  
-private:
-  bool dir;
-  unsigned stepPin, dirPin;
-};
-
-class OneShotOscillator : public Oscillator
-{
-public:
-  OneShotOscillator(unsigned pin, float holdSecs = 0.1f) : 
-    pin(pin), holdMicros(1e6 * holdSecs), startTimeMicros(0), Oscillator()
-  {
-    pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
-  }
-
-  void noteOn(int midiNote)
-  {
-    startTimeMicros = elapsedMicros;
-    digitalWrite(pin, HIGH);
-  }
-  
-  void update()
-  {
-    if (startTimeMicros)
-    {
-      if (elapsedMicros - startTimeMicros > holdMicros)
-      {
-        digitalWrite(pin, LOW);
-        startTimeMicros = 0;
-      }
-    }
-  }
-  
-private:
-  unsigned long startTimeMicros;
-  unsigned holdMicros;
-  unsigned pin;
-};
-
-StepperOscillator stepper(3, 2);
+StepperOscillator stepper1(3, 2);
+StepperOscillator stepper2(5, 4);
 OneShotOscillator arm1(ARM1);
 OneShotOscillator arm2(ARM2);
 
 SoftwareSerial midiIn(MIDI_IN, 9); // RX, TX
-
 
 void setup()
 {                
@@ -154,17 +38,28 @@ void setup()
 void loop()
 {
   Oscillator::elapsedMicros = micros();
-  stepper.update();
+  
+  // to keep things simple I have made these as 
+  // separate variables, however, if these were 
+  // in an array you could loop through them
+  // for (int i = 0; i < NUM_OSCILLATORS; ++i)
+  // {
+  //    oscillators[i]->update();
+  // }
   arm1.update();
   arm2.update();
+  stepper1.update();
+  stepper2.update();
   updateMidi();
 }
 
 void noteOn(int channel, int note, int vel)
 {
+  // similarly for these, you could loop through the 
+  // oscillators
   stepper.noteOn(note);
-  //arm1.noteOn(note);
-  //arm2.noteOn(note);
+  arm1.noteOn(note);
+  arm2.noteOn(note);
   digitalWrite(LED, HIGH);
 }
 
