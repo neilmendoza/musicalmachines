@@ -1,6 +1,7 @@
 # Musical Machines and Flapping Phones
 
-This is the code for the conference talk "Musical Machines and Flapping Phone".
+This is the code for the conference talk ["Musical Machines and Flapping Phone"](http://www.slideshare.net/neilmendoza/musical-machines-and-flapping-phones)
+
 
 * **openFrameworksWaveform** - OF app demonstrating what a square wave sounds and looks like with rainbow bread dogs.
 * **arduinoSimpleMidi** - Arduino sketch showing how to read MIDI.
