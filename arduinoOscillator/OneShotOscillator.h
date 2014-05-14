@@ -34,9 +34,9 @@
 class OneShotOscillator : public Oscillator
 {
 public:
-  OneShotOscillator(unsigned pin, float holdSecs = 0.1f);
+  OneShotOscillator(unsigned channel, unsigned pin, float holdSecs = 0.1f);
 
-  void noteOn(int midiNote);
+  void noteOn(unsigned channel, unsigned note, unsigned vel);
   void update();
   
 private:

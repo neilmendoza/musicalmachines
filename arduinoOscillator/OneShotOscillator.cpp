@@ -29,17 +29,20 @@
  */
 #include "OneShotOscillator.h"
 
-OneShotOscillator::OneShotOscillator(unsigned pin, float holdSecs) : 
-	pin(pin), holdMicros(1e6 * holdSecs), startTimeMicros(0), Oscillator()
+OneShotOscillator::OneShotOscillator(unsigned channel, unsigned pin, float holdSecs) : 
+	pin(pin), holdMicros(1e6 * holdSecs), startTimeMicros(0), Oscillator(channel)
 {
 	pinMode(pin, OUTPUT);
 	digitalWrite(pin, LOW);
 }
 
-void OneShotOscillator::noteOn(int midiNote)
+void OneShotOscillator::noteOn(unsigned channel, unsigned note, unsigned vel)
 {
+    if (this->channel == channel)
+    {
 	startTimeMicros = elapsedMicros;
 	digitalWrite(pin, HIGH);
+    }
 }
 
 void OneShotOscillator::update()

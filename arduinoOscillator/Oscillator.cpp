@@ -31,37 +31,43 @@
   
 unsigned long Oscillator::elapsedMicros = 0;
 
-Oscillator::Oscillator() : periodMicros(0), halfPeriodMicros(0) {}
+Oscillator::Oscillator(unsigned channel) : channel(channel), periodMicros(0), halfPeriodMicros(0) {}
   
-void Oscillator::noteOn(int midiNote)
+void Oscillator::noteOn(unsigned channel, unsigned note, unsigned vel)
 {
-	periodMicros = 1000000.0 / midiToFrequency(midiNote);
-	halfPeriodMicros = 0.5 * periodMicros;
+  if (this->channel == channel)
+  {
+    periodMicros = 1000000.0 / midiToFrequency(note);
+    halfPeriodMicros = 0.5 * periodMicros;
+  }
 };
 
-void Oscillator::noteOff(int midiNote)
+void Oscillator::noteOff(unsigned channel, unsigned note)
 {
-	periodMicros = 0;
-	halfPeriodMicros = 0;
+  if (this->channel == channel)
+  {
+    periodMicros = 0;
+    halfPeriodMicros = 0;
+  }
 };
 
 void Oscillator::update()
 {
-	if(periodMicros > 0)
-	{
-			unsigned long elapsedPeriodMicros = elapsedMicros % periodMicros;
+  if(periodMicros > 0)
+  {
+    unsigned long elapsedPeriodMicros = elapsedMicros % periodMicros;
 			
-			if(elapsedPeriodMicros > halfPeriodMicros != !wave)
-			{
-				// wave form has flipped
-				wave = !wave;
-				if (wave) risingEdge();
-				else fallingEdge();
-			}
-	}
+    if(elapsedPeriodMicros > halfPeriodMicros != !wave)
+    {
+      // wave form has flipped
+      wave = !wave;
+      if (wave) risingEdge();
+      else fallingEdge();
+    }
+  }
 };
 
 double Oscillator::midiToFrequency(int midiNote)
 {
-	return 440.0 * exp(0.057762265 * (midiNote - 69.0));
+  return 440.0 * exp(0.057762265 * (midiNote - 69.0));
 }

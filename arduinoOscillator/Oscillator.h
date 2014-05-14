@@ -36,15 +36,18 @@ class Oscillator
 public:
   static unsigned long elapsedMicros;
   
-  Oscillator();
+  Oscillator(unsigned channel);
   virtual ~Oscillator() {}
   
   virtual void risingEdge() {}
   virtual void fallingEdge() {}
   
-  virtual void noteOn(int midiNote);
-  virtual void noteOff(int midiNote);
+  virtual void noteOn(unsigned channel, unsigned note, unsigned vel);
+  virtual void noteOff(unsigned channel, unsigned note);
   virtual void update();
+
+protected:
+  unsigned channel;
 
 private:
   double midiToFrequency(int midiNote);

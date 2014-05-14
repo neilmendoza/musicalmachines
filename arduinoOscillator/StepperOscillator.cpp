@@ -30,18 +30,21 @@
 
 #include "StepperOscillator.h"
 
-StepperOscillator::StepperOscillator(unsigned stepPin, unsigned dirPin) : stepPin(stepPin), dirPin(dirPin), dir(LOW)
+StepperOscillator::StepperOscillator(unsigned channel, unsigned stepPin, unsigned dirPin) : stepPin(stepPin), dirPin(dirPin), dir(LOW), Oscillator(channel)
 {
 	pinMode(stepPin, OUTPUT);
 	pinMode(dirPin, OUTPUT);
 	digitalWrite(dirPin, dir);
 }
 
-void StepperOscillator::noteOff(int midiNote)
+void StepperOscillator::noteOff(unsigned channel, unsigned note)
 {
-	Oscillator::noteOff(midiNote);
+    if (this->channel == channel)
+    {
+	Oscillator::noteOff(channel, note);
 	dir = !dir;
 	digitalWrite(dirPin, dir);
+  }
 }
 
 void StepperOscillator::risingEdge()

@@ -29,18 +29,19 @@
  */
 #pragma once
 
-#include "Oscillator.h"
-
-class StepperOscillator : public Oscillator
-{
-public:
-  StepperOscillator(unsigned channel, unsigned stepPin, unsigned dirPin);
-  
-  void noteOff(unsigned channel, unsigned note);
-  void risingEdge();
-  void fallingEdge();
-  
-private:
-  bool dir;
-  unsigned stepPin, dirPin;
-};
+const unsigned CHANNEL1 = 0;
+const unsigned CHANNEL2 = 1;
+const unsigned CHANNEL3 = 2;
+const unsigned CHANNEL4 = 3;
+const unsigned CHANNEL5 = 4;
+const unsigned CHANNEL6 = 5;
+const unsigned CHANNEL7 = 6;
+const unsigned CHANNEL8 = 7;
+const unsigned CHANNEL9 = 8;
+const unsigned CHANNEL10 = 9;
+const unsigned CHANNEL11 = 10;
+const unsigned CHANNEL12 = 11;
+const unsigned CHANNEL13 = 12;
+const unsigned CHANNEL14 = 13;
+const unsigned CHANNEL15 = 14;
+const unsigned CHANNEL16 = 15;

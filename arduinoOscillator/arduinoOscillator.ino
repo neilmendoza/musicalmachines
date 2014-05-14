@@ -2,6 +2,7 @@
 
 #include "StepperOscillator.h"
 #include "OneShotOscillator.h"
+#include "Constants.h"
 
 int midiByte0 = -1;
 int midiByte1  = -1;
@@ -17,21 +18,21 @@ int midiByte2  = -1;
 
 #define MIDI_BAUD_RATE 31250
 
-const int LED = 13;
-const int MIDI_IN = 10;
-const int ARM1 = 11;
-const int ARM2 = 12;
+const unsigned LED_PIN = 13;
+const unsigned MIDI_IN_PIN = 10;
+const unsigned ARM1_PIN = 11;
+const unsigned ARM2_PIN = 12;
 
-StepperOscillator stepper1(3, 2);
-StepperOscillator stepper2(5, 4);
-OneShotOscillator arm1(ARM1);
-OneShotOscillator arm2(ARM2);
+StepperOscillator stepper1(CHANNEL1, 3, 2);
+StepperOscillator stepper2(CHANNEL2, 5, 4);
+OneShotOscillator arm1(CHANNEL3, ARM1_PIN);
+OneShotOscillator arm2(CHANNEL4, ARM2_PIN);
 
-SoftwareSerial midiIn(MIDI_IN, 9); // RX, TX
+SoftwareSerial midiIn(MIDI_IN_PIN, 9); // RX, TX
 
 void setup()
 {                
-  pinMode(LED, OUTPUT);     
+  pinMode(LED_PIN, OUTPUT);     
   midiIn.begin(MIDI_BAUD_RATE);
 }
 
@@ -57,16 +58,18 @@ void noteOn(int channel, int note, int vel)
 {
   // similarly for these, you could loop through the 
   // oscillators
-  stepper.noteOn(note);
-  arm1.noteOn(note);
-  arm2.noteOn(note);
-  digitalWrite(LED, HIGH);
+  stepper1.noteOn(channel, note, vel);
+  stepper2.noteOn(channel, note, vel);
+  arm1.noteOn(channel, note, vel);
+  arm2.noteOn(channel, note, vel);
+  digitalWrite(LED_PIN, HIGH);
 }
 
 void noteOff(int channel, int note)
 {
-  stepper.noteOff(note);
-  digitalWrite(LED, LOW);
+  stepper1.noteOff(channel, note);
+  stepper2.noteOff(channel, note);
+  digitalWrite(LED_PIN, LOW);
 }
 
 void updateMidi()
@@ -84,8 +87,6 @@ void updateMidi()
     
     int st = HI_NIBBLE(midiByte2);
     int channel = LO_NIBBLE(midiByte2);
-   
-    // channel += 1; // we're doing this with defines
    
     // now check to see if we have a midi
     if(st == NOTE_ON_STATUS)
