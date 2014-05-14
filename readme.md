@@ -1,6 +1,6 @@
 # Musical Machines and Flapping Phones
 
-This is the code for the conference talk ["Musical Machines and Flapping Phone"](http://www.slideshare.net/neilmendoza/musical-machines-and-flapping-phones)
+This is the code for the talk I gave at FITC entitled ["Musical Machines and Flapping Phone"](http://www.slideshare.net/neilmendoza/musical-machines-and-flapping-phones)
 
 
 * **openFrameworksWaveform** - OF app demonstrating what a square wave sounds and looks like with rainbow bread dogs.
